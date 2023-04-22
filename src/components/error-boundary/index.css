@@ -1,5 +1,0 @@
-#error-indicator {
-  color: var(--error-color);
-  cursor: pointer;
-  margin: 1em;
-}
