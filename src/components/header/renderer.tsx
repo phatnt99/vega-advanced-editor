@@ -165,6 +165,10 @@ class Header extends React.PureComponent<PropsType, State> {
     window.open(`${BACKEND_URL}auth/github/logout`, '_blank');
   }
 
+  public setDesignMode(designMode: boolean) {
+    this.props.setDesignMode(designMode);
+  }
+
   public render() {
     const modeOptions =
       this.props.mode === Mode.Vega
@@ -270,6 +274,18 @@ class Header extends React.PureComponent<PropsType, State> {
         )}
       </div>
     );
+
+    const designModeButton = (
+      <div className="auth-button-container">
+        <form>
+          <button className="sign-in" type="submit" onClick={() => this.setDesignMode(!this.props.designMode)}>
+            <span className="sign-in-text">
+              Design Mode: {this.props.designMode ? "ON" : "OFF"}
+            </span>
+          </button>
+        </form>
+      </div>
+    )
 
     const runOptions = this.props.manualParse ? [{label: 'Auto'}] : [{label: 'Manual'}];
 
@@ -535,7 +551,7 @@ class Header extends React.PureComponent<PropsType, State> {
             }}
           </PortalWithState>
           {settingsButton}
-          {authButton}
+          {designModeButton}
         </section>
       </div>
     );

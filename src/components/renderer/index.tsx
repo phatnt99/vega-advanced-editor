@@ -21,6 +21,7 @@ export function mapStateToProps(state: State) {
     vegaSpec: state.vegaSpec,
     view: state.view,
     backgroundColor: state.backgroundColor,
+    designMode: state.designMode
   };
 }
 
@@ -30,6 +31,7 @@ export function mapDispatchToProps(dispatch: Dispatch<EditorActions.Action>) {
       setView: EditorActions.setView,
       setRuntime: setRuntime,
       recordPulse: recordPulse,
+      addInfo: EditorActions.addInfo
     },
     dispatch
   );

@@ -9,7 +9,7 @@ import vegaTooltip from 'vega-tooltip';
 import {mapDispatchToProps, mapStateToProps} from '.';
 import {KEYCODES, Mode} from '../../constants';
 import addProjections from '../../utils/addProjections';
-import {dispatchingLogger} from '../../utils/logger';
+import {LocalLogger, dispatchingLogger} from '../../utils/logger';
 import {Popup} from '../popup';
 import './index.css';
 
@@ -186,6 +186,18 @@ class Editor extends React.PureComponent<Props, State> {
     }
     setRuntime(runtime);
     setView(view);
+
+    if (this.props.designMode) {
+      // add logger
+    const logInfo = (message: string) => {
+      this.props.addInfo(message);
+    }
+    window.VEGA_DEBUG.view.addEventListener('click', function (event, item: any) {
+      logInfo("[" + new Date().toLocaleString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false, minute:'2-digit', second:'2-digit'}) + "] Current mark name: " + item?.mark?.name);
+    });
+    } else {
+      window.VEGA_DEBUG.view.addEventListener('click', () => {})
+    }
   }
 
   private runAfter(df: any) {

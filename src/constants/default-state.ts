@@ -62,6 +62,7 @@ export type State = {
   debugs: string[];
   themeName: string;
   backgroundColor: string;
+  designMode: boolean;
 } & typeof dataflowInitialState;
 
 export const DEFAULT_STATE: State = {
@@ -110,5 +111,6 @@ export const DEFAULT_STATE: State = {
   debugs: [],
   infos: [],
   backgroundColor: '#ffffff',
+  designMode: false,
   ...dataflowInitialState,
 };

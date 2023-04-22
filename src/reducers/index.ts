@@ -23,6 +23,7 @@ import {
   SetVegaExample,
   SetVegaLiteExample,
   SET_BACKGROUND_COLOR,
+  SET_DESIGN_MODE,
   SET_BASEURL,
   SET_COMPILEDPANE_ITEM,
   SET_COMPILED_EDITOR_REFERENCE,
@@ -69,7 +70,7 @@ import {
   SET_THEME_NAME,
   SET_TOOLTIP,
 } from './../actions/editor';
-import {LocalLogger} from './../utils/logger';
+import {LocalLogger, dispatchingLogger} from './../utils/logger';
 import {parse as parseJSONC, visit as visitJSONC, printParseErrorCode as printJSONCParseErrorCode} from 'jsonc-parser';
 
 function throwJSONCParseError(error, _offset, _length, startLine, startCharacter): SyntaxError {
@@ -142,6 +143,34 @@ function extractConfig(state: State) {
   }
 }
 
+function handleDesignModeMarks(mark: any, parent: any) {
+  if (!mark.encode) {
+    mark.encode = {};
+  }
+
+  mark.encode["hover"] = {
+    strokeWidth: {value: 2},
+    stroke: {value: "firebrick"},
+    zindex: {value: 1}
+  }
+
+  if (!mark.encode["update"]) {
+    mark.encode["update"] = {
+      stroke: {value: "#FFF"},
+    }
+  } else {
+    if (mark.encode.update.stroke == null || mark.encode.update.stroke == undefined) {
+      mark.encode.update.stroke = {value: "#FFF"};
+    }
+  }
+
+  if (!parent.signals) {
+    parent.signals = [];
+  }
+  let currentHoverElSignal = parent.signals.find(sig => 'currentHover' == sig.name);
+  
+}
+
 function parseVega(
   state: State,
   action: SetVegaExample | UpdateVegaSpec | SetGistVegaSpec,
@@ -152,6 +181,20 @@ function parseVega(
 
   try {
     const spec = parseJSONCOrThrow(action.spec);
+
+    if (state.designMode) {
+      spec.marks.forEach(mark => {
+        if ('group' === mark.type) {
+          // group mark
+          const groupMarks = mark.marks;
+          groupMarks.forEach(subMark => {
+            handleDesignModeMarks(subMark, spec)
+          });
+        } else {
+          handleDesignModeMarks(mark, spec);
+        }
+      });
+    }
 
     if (spec.$schema) {
       try {
@@ -545,6 +588,11 @@ export default (state: State = DEFAULT_STATE, action: Action): State => {
       return {
         ...state,
         backgroundColor: action.color,
+      };
+    case SET_DESIGN_MODE:
+      return {
+        ...state,
+        designMode: action.designMode
       };
     case ERROR:
       return {
